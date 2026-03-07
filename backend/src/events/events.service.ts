@@ -23,8 +23,13 @@ export class EventsService {
 
     if (query?.search) {
       const searchTerm = query.search.toLowerCase();
+
+      // User might search for "NFL and "Bears", but they may not be adjacent in the title.
+      const searchTerms = searchTerm.split(' ');
+
+      // [TODO] Optimize this search logic.
       filteredEvents = filteredEvents.filter(event =>
-        event.title.toLowerCase().includes(searchTerm)
+        searchTerms.every(term => event.title.toLowerCase().includes(term))
       );
     }
 
