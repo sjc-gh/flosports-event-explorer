@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { EventDatabase } from '../data/event-database';
 import { IAggregateEvent } from '../data/aggregate-event';
 import { LiveStatsDatabase } from '../data/live-stats-database';
@@ -6,6 +6,14 @@ import { LiveStatsDatabase } from '../data/live-stats-database';
 @Injectable()
 export class EventsService {
   constructor(private eventDatabase: EventDatabase, private liveStatsDatabase: LiveStatsDatabase) {}
+
+  findOne(id: string): IAggregateEvent {
+    const event = this.eventDatabase.findOne(id);
+    if (event) {
+      return this.aggregateEvent(event);
+    }
+    throw new NotFoundException(`Event with id ${id} not found`);
+  }
 
   findAll(query?: { live?: boolean; sport?: string; search?: string }): ReadonlyArray<IAggregateEvent> {
     const events = this.eventDatabase.findAll();
@@ -33,6 +41,17 @@ export class EventsService {
       );
     }
 
-    return filteredEvents.map(event => ({ ...event, stats: this.liveStatsDatabase.findOne(event.id) }));
+    return filteredEvents.map(event => this.aggregateEvent(event));
+  }
+
+  private aggregateEvent(event: IAggregateEvent): IAggregateEvent {
+    const aggregateEvent: IAggregateEvent = {
+      ...event
+    };
+    // Only if the event status is 'live' should we fetch the live stats.
+    if (event.status === 'live') {
+      aggregateEvent.stats = this.liveStatsDatabase.findOne(event.id);
+    }
+    return aggregateEvent;
   }
 }
