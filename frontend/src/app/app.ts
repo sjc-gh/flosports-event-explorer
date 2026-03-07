@@ -1,9 +1,10 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { FilterBarComponent } from './filter-bar.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, FilterBarComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })
