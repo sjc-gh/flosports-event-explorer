@@ -1,6 +1,7 @@
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { FilterService } from './filter.service';
 
 @Component({
   selector: 'app-filter-bar',
@@ -9,22 +10,42 @@ import { CommonModule } from '@angular/common';
   templateUrl: './filter-bar.component.html',
   styleUrls: ['./filter-bar.component.scss']
 })
-export class FilterBarComponent {
+export class FilterBarComponent implements OnInit {
   live = false;
   optionSearch = '';
   searchText = '';
   selectedOption: string | null = null;
   isDropdownOpen = false;
-  options = [
-    'List Option 1',
-    'List Option 2',
-    'List Option 3',
-    'List Option 4',
-    'List Option 5',
-    'List Option 6',
-    'List Option 7'
-  ];
+  options: string[] = [];
   filteredOptions = [...this.options];
+
+  constructor(private filterService: FilterService) {
+    // Sync with service
+    this.filterService.live$.subscribe(value => this.live = value);
+    this.filterService.searchText$.subscribe(value => this.searchText = value);
+    this.filterService.selectedOption$.subscribe(value => this.selectedOption = value);
+  }
+
+  ngOnInit() {
+    this.fetchSports();
+  }
+
+  fetchSports() {
+    fetch('http://localhost:3000/sports')
+      .then(response => response.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          this.options = data; // Data is already an array of sport names
+        } else {
+          this.options = []; // Fallback
+        }
+        this.filteredOptions = [...this.options];
+      })
+      .catch(() => {
+        this.options = []; // Fallback
+        this.filteredOptions = [...this.options];
+      });
+  }
 
   filterOptions() {
     const search = this.optionSearch.toLowerCase();
@@ -41,6 +62,7 @@ export class FilterBarComponent {
 
   selectOption(option: string) {
     this.selectedOption = option;
+    this.filterService.setSelectedOption(option);
     this.isDropdownOpen = false;
     this.optionSearch = '';
     this.filteredOptions = [...this.options];
@@ -48,6 +70,15 @@ export class FilterBarComponent {
 
   clearSearch() {
     this.searchText = '';
+    this.filterService.setSearchText('');
+  }
+
+  onLiveChange() {
+    this.filterService.setLive(this.live);
+  }
+
+  onSearchTextChange() {
+    this.filterService.setSearchText(this.searchText);
   }
 
   @HostListener('document:click', ['$event'])

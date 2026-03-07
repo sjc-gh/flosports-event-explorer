@@ -1,0 +1,20 @@
+<div class="results-container">
+  <h2>Search Results</h2>
+
+  <div *ngIf="loading" class="loading">
+    Loading results...
+  </div>
+
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error" class="results-list">
+    <div *ngFor="let result of results" class="result-item">
+      <pre>{{ result | json }}</pre>
+    </div>
+    <div *ngIf="results.length === 0" class="no-results">
+      No results found.
+    </div>
+  </div>
+</div>
