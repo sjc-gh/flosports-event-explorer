@@ -1,0 +1,19 @@
+{
+  "name": "flosports-event-explorer",
+  "version": "1.0.0",
+  "scripts": {
+    "install:server": "npm install --prefix backend",
+    "install:client": "npm install --prefix frontend",
+    "install:all": "concurrently -k -n SERVER,CLIENT -c red,blue \"npm run install:server\" \"npm run install:client\"",
+    "build:server": "npm run build --prefix backend",
+    "build:client": "npm run build --prefix frontend",
+    "build:all": "concurrently -k -n SERVER,CLIENT -c red,blue \"npm run build:server\" \"npm run build:client\"",
+    "start:server": "npm run start:dev --prefix backend",
+    "start:client": "npm run start --prefix frontend",
+    "start:all": "concurrently -k -n SERVER,CLIENT -c red,blue \"npm run start:server\" \"npm run start:client\"",
+    "start": "npm run install:all && npm run build:all && npm run start:all"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}
