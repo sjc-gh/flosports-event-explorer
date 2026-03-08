@@ -6,7 +6,6 @@ import * as path from 'path';
 // to find all records and find a record by ID.  This approach is suitable for the purposes of this project, but in
 // production code the data would ideally originate from a true database like PostreSQL or DynamoDB.
 export class Database<T> {
-  private asset: string;
   private data: T[] = [];
   private dataMap: Record<string, T> = {};
 
@@ -14,7 +13,6 @@ export class Database<T> {
     const eventsPath = path.join(__dirname, `../assets/${asset}.json`);
     const eventsData = fs.readFileSync(eventsPath, 'utf8');
 
-    this.asset = asset;
     this.data = JSON.parse(eventsData);
     this.dataMap = this.data.reduce((map, item) => {
       map[getId(item)] = item;
