@@ -7,15 +7,15 @@
     </label>
   </div>
   <div class="filter-bar__right">
-    <div class="custom-select" [class.open]="isDropdownOpen" role="combobox" aria-expanded="{{isDropdownOpen}}" aria-haspopup="listbox" aria-label="Select sport" (click)="toggleDropdown()">
-      <div class="select-display">
+    <div class="custom-select" [class.open]="isDropdownOpen" role="combobox" aria-expanded="{{isDropdownOpen}}" aria-haspopup="listbox" aria-label="Select sport">
+      <button class="select-display" (click)="toggleDropdown()" (keydown)="onSelectKeydown($event)" type="button" aria-describedby="selected-sport" tabindex="0">
         {{ selectedOption || 'Select a sport' }}
         <span class="arrow">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </span>
-      </div>
+      </button>
       <div class="dropdown-content" *ngIf="isDropdownOpen" (click)="$event.stopPropagation()" role="listbox" aria-label="Sports options">
         <div class="dropdown-search">
           <svg class="dropdown-search-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -24,7 +24,7 @@
           <input type="text" placeholder="Search" [(ngModel)]="optionSearch" (input)="filterOptions()" aria-label="Search sports">
         </div>
         <ul class="options-list">
-          <li *ngFor="let option of filteredOptions" (mousedown)="selectOption(option)" [class.selected-option]="option === selectedOption" role="option" [attr.aria-selected]="option === selectedOption">
+          <li *ngFor="let option of filteredOptions; let i = index" (mousedown)="selectOption(option)" (keydown)="onOptionKeydown($event, option, i)" [class.selected-option]="option === selectedOption" role="option" [attr.aria-selected]="option === selectedOption" [attr.tabindex]="isDropdownOpen && i === focusedIndex ? 0 : -1">
             <span>{{ option }}</span>
             <span class="option-check" *ngIf="option === selectedOption" aria-hidden="true">
               <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
