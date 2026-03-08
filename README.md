@@ -12,7 +12,7 @@ After that, navigate to http://localhost:4200 in a browser.
 ## What wasn't explicit in this PRD that you had to decide on your own?
 
 1. [backend] Searching for events by text input for title could use fuzzy logic.  It's more than likely a user wouldn't know the full exact title  or an event, and would more likely use keywords such as "football" or "NFL Bears".  With multiple search terms, it's reasonable to assume the user is looking for all within the same title.  The PRD does not explicitly state how the text search should be handled, but this sounds reasonable.
-2. [frontend] The Sport dropdown allows the user to filter by sport, but does not specify real-time handling of new sports events.  For the purposes of this demo, I'll work with the static list of events provided, however in a real-world production environment, the "Sport" dropdown should be dynamic and display a dynamic list of sports based on all real-time events past, present, or future.
+2. [frontend] The Sport dropdown allows the user to filter by sport, but does not specify real-time handling of new sports events.  For the purposes of this demo, I'll work with the static list of events provided, however in a real-world production environment, the "Select a sport" dropdown should display a dynamic list of sports based on all real-time events past, present, or future.
 
 
 # API Design
@@ -21,7 +21,7 @@ After that, navigate to http://localhost:4200 in a browser.
 
 I decided to structure the endpoints as follows:
 
-<code>/events</code> - Returns a list of aggregated events that fulfill the search criteria.  All parameters are optional and include:
+<code>/events</code> - Returns a list of aggregated events that fulfill the search criteria.  All query parameters are optional and include:
 ```
   live - Returns only the events whose status is "live".
   sport - Returns only the events that match the given sport.
@@ -83,9 +83,12 @@ There are a lot of things I was thinking about while working on this.  Some thin
 
 * Pagination of results.  There are 5000 static events, but more than likely there would be a whole lot more in production across 25+ sports each with historical, present, and future events.  I believe a proper API would allow the client to paginate the results to only get so many events at a time.  That also leads into...
 * Virtualization of results.  Even if we have 100 events in a single page of paginated results, the user won't be able to see details on all 100 events in the UI.  That's where it might be beneficial to add a virtual container that renders only the DOM elements needed to show a current "visual" page of data.  Rendering too many DOM elements can slow down the browser or lead to low resources.
+* Add debouncing logic to the search text field so we don't execute a search for every keystroke.
+* There is currently no way to clear the selected sport.  The requirements mentioned that the filter bar needs to be an exact match.  I would discuss this with the UX designer on how best to handle this scenario also considering a mobile-first UX.
 * Flesh out unit tests and add E2E tests.  For the purposes of this project, I chose a few backend APIs to write unit tests for, but ideally all backend business logic and all frontend UI would have associated unit or E2E testing.  I skipped the unit tests for the <code>Events</code> API, but the ones I did add were done with the help of Copilot.
 * Handle localization on the frontend.  Currently the text strings are hard-coded in English (US), but a production-quality UI would be able to handle localization (l10n) and internationalization (i18n).
-* Ensure the UI is fully accessible with the appropriate 
+* Ensure the UI is fully accessible with the appropriate ARIA labels and such.
+
 
 
 # AI Tools
